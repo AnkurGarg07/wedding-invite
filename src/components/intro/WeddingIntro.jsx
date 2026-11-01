@@ -117,6 +117,7 @@ export function WeddingIntro({ data, language, invitationRef, onComplete }) {
         preload="auto"
         muted
         onEnded={finish}
+        poster="/assets/video-poster.webp"
         onError={() => {
           openedRef.current = false;
         }}
