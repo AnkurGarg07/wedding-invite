@@ -31,6 +31,7 @@ export function WeddingIntro({ data, language, invitationRef, onComplete }) {
   const videoRef = useRef(null);
   const controlsRef = useRef(null);
   const readyPromiseRef = useRef(null);
+  const loadVideoRef = useRef(null);
   const openedRef = useRef(false);
   const transitioned = useRef(false);
   const reducedMotion = window.matchMedia(
@@ -54,9 +55,31 @@ export function WeddingIntro({ data, language, invitationRef, onComplete }) {
     video.addEventListener("loadeddata", ready);
     video.addEventListener("canplay", ready);
     if (video.readyState >= 2) ready();
+    const loadVideo = () => {
+      if (!video.src) video.src = data.assets.video;
+      video.preload = "auto";
+      video.load();
+    };
+    loadVideoRef.current = loadVideo;
+    const connection = navigator.connection;
+    const conserveData =
+      window.matchMedia("(max-width: 600px)").matches ||
+      connection?.saveData ||
+      /^(slow-2g|2g)$/.test(connection?.effectiveType || "");
+    const idleId = conserveData
+      ? null
+      : "requestIdleCallback" in window
+        ? window.requestIdleCallback(loadVideo, { timeout: 1500 })
+        : window.setTimeout(loadVideo, 250);
     return () => {
       video.removeEventListener("loadeddata", ready);
       video.removeEventListener("canplay", ready);
+      if (idleId !== null && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleId);
+      } else if (idleId !== null) {
+        window.clearTimeout(idleId);
+      }
+      loadVideoRef.current = null;
       readyPromiseRef.current = null;
     };
   }, []);
@@ -81,6 +104,7 @@ export function WeddingIntro({ data, language, invitationRef, onComplete }) {
     openedRef.current = true;
     controlsRef.current?.querySelector(".open")?.classList.add("playing");
     const video = videoRef.current;
+    loadVideoRef.current?.();
     const start = () => {
       video.currentTime = 0;
       video.muted = false;
@@ -112,15 +136,21 @@ export function WeddingIntro({ data, language, invitationRef, onComplete }) {
       <video
         ref={videoRef}
         className="gate-video"
-        src={data.assets.video}
         playsInline
-        preload="auto"
+        preload="metadata"
         muted
         onEnded={finish}
-        poster="/assets/video-poster.webp"
+        poster="/assets/video-poster-mobile-compressed.webp"
         onError={() => {
           openedRef.current = false;
         }}
+      />
+      <img
+        className="gate-poster"
+        src="/assets/video-poster-mobile-compressed.webp"
+        alt=""
+        fetchPriority="high"
+        decoding="async"
       />
       <div ref={controlsRef} className="gate-overlay">
         <div className="gm" aria-hidden="true">

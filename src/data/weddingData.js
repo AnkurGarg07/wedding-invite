@@ -4,7 +4,7 @@ export const weddingData = {
   city: { en: "Agra", hi: "आगरा" },
   timezone: "Asia/Kolkata",
   siteUrl: "",
-  assets: { music: "/assets/song.mp3", video: "/assets/video.mp4" },
+  assets: { music: "/assets/song.mp3", video: "/assets/video-v2.mp4" },
   monogram: { initials: "", separator: "|" },
   family: {
     groom: {

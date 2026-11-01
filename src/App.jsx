@@ -44,6 +44,7 @@ export default function App() {
             window.scrollTo({ top: 0, left: 0, behavior: "auto" });
             document.body.classList.remove("lock");
             document.body.classList.add("go");
+            document.getElementById("initial-poster")?.remove();
             document.dispatchEvent(new Event("invitation:ready"));
           }}
         />

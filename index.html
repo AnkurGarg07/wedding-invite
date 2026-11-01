@@ -4,9 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#FAF5EE" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&family=Noto+Serif+Devanagari:wght@400;600&family=Hind:wght@300;400&display=swap"
+    />
+    <link rel="preload" as="image" href="/assets/video-poster-mobile-compressed.webp" fetchpriority="high" />
+    <meta
+      name="description"
+      content="A cinematic Shubh Vivah wedding invitation for Sagar and Trapti."
+    />
     <title>Shubh Vivah — Wedding Invitation</title>
   </head>
   <body>
+    <img
+      id="initial-poster"
+      src="/assets/video-poster-mobile-compressed.webp"
+      alt=""
+      fetchpriority="high"
+      decoding="async"
+      style="position:fixed;inset:0;width:min(100%,430px);height:100dvh;margin:auto;object-fit:contain;background:#24311e;z-index:24"
+    />
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import gsap from "gsap";
 import { localized, t } from "../../data/translations";
 
 const dateValue = (value) => (value ? new Date(value) : null);
@@ -69,45 +68,15 @@ export function InvitationPage({ data, language, side, invitationRef }) {
   const posterImages = data.gallery.length ? data.gallery : [];
 
   useEffect(() => {
-    let active = true;
-    const prepare = async () => {
-      await document.fonts?.ready;
-      if (!active) return;
-      await Promise.all(
-        [...pageRef.current.querySelectorAll("img")].map((image) =>
-          image.decode?.().catch(() => {}),
-        ),
-      );
-    };
-    prepare();
-    return () => {
-      active = false;
-    };
-  }, []);
-  useEffect(() => {
     const root = pageRef.current;
     if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
       return undefined;
     const sections = [...root.querySelectorAll("section")].slice(1);
-    const context = gsap.context(() => {
-      gsap.set(sections, { opacity: 0, y: 24 });
-    }, root);
     const revealed = new WeakSet();
     const reveal = (section) => {
       if (revealed.has(section)) return;
       revealed.add(section);
-      gsap.fromTo(
-        section,
-        { opacity: 0, y: 24, willChange: "transform,opacity" },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.75,
-          ease: "power3.out",
-          overwrite: "auto",
-          onComplete: () => gsap.set(section, { clearProps: "willChange" }),
-        },
-      );
+      section.classList.add("section-revealed");
     };
     const isInRevealViewport = (section) => {
       const bounds = section.getBoundingClientRect();
@@ -144,7 +113,6 @@ export function InvitationPage({ data, language, side, invitationRef }) {
     return () => {
       document.removeEventListener("invitation:ready", handleInvitationReady);
       observer.disconnect();
-      context.revert();
     };
   }, []);
   useEffect(() => {
@@ -209,8 +177,6 @@ export function InvitationPage({ data, language, side, invitationRef }) {
             <span className="header-monogram"><Monogram data={data} side={side} /></span>
             <span className="menu-mark" aria-hidden="true"><i /><i /><i /></span>
           </header>
-          <img className="hero-floral hero-floral-left" src="/assets/floaral.png" alt="" />
-          <img className="hero-floral hero-floral-right" src="/assets/floaral.png" alt="" />
           <div className="reference-arch">
             <div className="arch-copy">
               <p className="sm">{t(language, "hero")}</p>
@@ -243,8 +209,6 @@ export function InvitationPage({ data, language, side, invitationRef }) {
           <p className="sm">{t(language, "shlokaTr")}</p>
         </section>
         <section id="invite" className="reference-invite" data-fl="lotus">
-          <img className="section-floral section-floral-left" src="/assets/floaral.png" alt="" />
-          <img className="section-floral section-floral-right" src="/assets/floaral.png" alt="" />
           <h2>{t(language, "inv")}</h2>
           <article className="card">
             <i className="c a" />
@@ -259,7 +223,12 @@ export function InvitationPage({ data, language, side, invitationRef }) {
           </article>
         </section>
         <section id="landscape" className="landscape-section" data-fl="pink">
-          <img src="/assets/palace.jpg" alt="Rajasthan palace beside a lotus lake" />
+          <img
+            src="/assets/palace-optimized.webp"
+            alt="Rajasthan palace beside a lotus lake"
+            loading="lazy"
+            decoding="async"
+          />
         </section>
         <section id="family" className="family-section" data-fl="genda">
           <h2>{t(language, "blessings")}</h2>
@@ -373,6 +342,7 @@ export function InvitationPage({ data, language, side, invitationRef }) {
                 key={image}
                 tabIndex="0"
                 role="button"
+                aria-label={image ? `Open gallery image ${index + 1}` : "Gallery placeholder"}
                 onClick={() => image && setLightbox(image)}
               >
                 {image ? <img loading="lazy" src={image} alt="" /> : "❀"}
